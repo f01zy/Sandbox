@@ -4,12 +4,11 @@
 #include <SDL3/SDL.h>
 #include <stdbool.h>
 #include <stddef.h>
+#include <stdint.h>
 
 enum ParticleType {
   PARTICLE_EMPTY,
-  PARTICLE_WALL,
-  PARTICLE_LIQUID,
-  PARTICLE_POWDER,
+  PARTICLE_SAND,
 };
 
 struct fVec2 {
@@ -26,19 +25,16 @@ struct Particle {
   enum ParticleType type;
   struct fVec2 pos;
   struct fVec2 vel;
+  bool is_updated;
 };
 
 struct GridItem {
   size_t particle;
-  bool is_updated;
-  bool is_mouse;
 };
 
 struct Grid {
-  struct Particle *pacticles;
+  struct Particle *parcticles;
   struct GridItem *buf;
-  struct Vec2 size;
-  size_t len;
 };
 
 struct Mouse {
@@ -48,11 +44,21 @@ struct Mouse {
 };
 
 struct AppContext {
-  SDL_Window *window;
-  SDL_Renderer *renderer;
+  struct SDL_Window *window;
+  struct SDL_Renderer *renderer;
+  struct SDL_Texture *screen_texture;
   struct Grid grid;
   struct Mouse mouse;
-  float last;
+  struct Vec2 screen_size;
+  uint32_t *color_buffer;
+  size_t total_particles;
+  float last_frame;
+};
+
+struct DrawParams {
+  uint32_t *buf;
+  struct Vec2 screen_size;
+  size_t total_particles;
 };
 
 #endif

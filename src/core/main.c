@@ -8,6 +8,7 @@
 #include "graphics/renderer.h"
 #include "simulation/grid.h"
 #include "types.h"
+#include "ui/mouse.h"
 #include "utility/utility.h"
 
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
@@ -22,10 +23,7 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
   }
   struct AppContext *ctx = (struct AppContext *)SDL_malloc(sizeof(struct AppContext));
   initialize_context(ctx);
-  if (!SDL_CreateWindowAndRenderer(TITLE, GRID_WIDTH, GRID_HEIGHT, 0, &ctx->window, &ctx->renderer)) {
-    SDL_Log("Failed to create window and renderer: %s\n", SDL_GetError());
-    return SDL_APP_FAILURE;
-  }
+  SDL_HideCursor();
   *appstate = ctx;
   return SDL_APP_CONTINUE;
 }
@@ -33,15 +31,15 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
   struct AppContext *ctx = (struct AppContext *)appstate;
 
-  float deltatime = get_deltatime(ctx->last);
+  float deltatime = get_deltatime(ctx->last_frame);
   float need = 1.0f / FPS;
   if (deltatime >= need) {
-    ctx->last = SDL_GetTicks();
+    ctx->last_frame = SDL_GetTicks();
     SDL_SetRenderDrawColorFloat(ctx->renderer, 0.0f, 0.0f, 0.0f, 1.0f);
     SDL_RenderClear(ctx->renderer);
     iterate_grid(ctx);
+    iterate_mouse(ctx);
     render(ctx);
-    reset_grid_flags(&ctx->grid);
     SDL_RenderPresent(ctx->renderer);
   }
 
@@ -55,7 +53,9 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
   struct AppContext *ctx = (struct AppContext *)appstate;
-  SDL_free(ctx->grid.pacticles);
+  SDL_DestroyTexture(ctx->screen_texture);
+  SDL_free(ctx->grid.parcticles);
   SDL_free(ctx->grid.buf);
+  SDL_free(ctx->color_buffer);
   SDL_free(ctx);
 }
