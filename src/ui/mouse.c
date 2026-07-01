@@ -17,13 +17,15 @@ void draw_mouse(const struct Mouse *mouse, const struct DrawParams *params) {
       (int)(mouse->pos.x + offset.x),
       (int)(mouse->pos.y + offset.y),
     };
-    size_t index = get_index_from_vector(params->screen_size, pos);
-    if (index >= 0 && index < params->total_particles) params->buf[index] = MAKE_COLOR(255, 255, 255, 255);
+    if (check_position(params->screen_size, pos)) {
+      size_t index = get_index_from_vector(params->screen_size, pos);
+      params->buf[index] = MAKE_COLOR(255, 255, 255, 255);
+    }
     angle++;
   }
 }
 
-void iterate_mouse(struct AppContext *ctx) {
+void move_mouse(struct AppContext *ctx) {
   struct fVec2 target;
   uint32_t state = SDL_GetMouseState(&target.x, &target.y);
   struct fVec2 delta = {

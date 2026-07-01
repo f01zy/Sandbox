@@ -7,7 +7,9 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(TARGET sandbox)
 set(SOURCE
   ./src/core/main.c
+  ./src/core/events.c
   ./src/simulation/grid.c
+  ./src/simulation/particles.c
   ./src/ui/mouse.c
   ./src/graphics/renderer.c
   ./src/utility/utility.c

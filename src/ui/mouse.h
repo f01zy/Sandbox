@@ -5,6 +5,6 @@
 #include <stddef.h>
 
 void draw_mouse(const struct Mouse *mouse, const struct DrawParams *params);
-void iterate_mouse(struct AppContext *ctx);
+void move_mouse(struct AppContext *ctx);
 
 #endif

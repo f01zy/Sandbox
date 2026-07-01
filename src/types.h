@@ -21,6 +21,11 @@ struct Vec2 {
   int y;
 };
 
+struct Vec4 {
+  int ax, bx;
+  int ay, by;
+};
+
 struct Particle {
   enum ParticleType type;
   struct fVec2 pos;
@@ -28,18 +33,11 @@ struct Particle {
   bool is_updated;
 };
 
-struct GridItem {
-  size_t particle;
-};
-
-struct Grid {
-  struct Particle *parcticles;
-  struct GridItem *buf;
-};
-
 struct Mouse {
   struct fVec2 pos;
   struct fVec2 vel;
+  bool is_left_button_pressed;
+  bool is_right_button_pressed;
   int size;
 };
 
@@ -47,9 +45,9 @@ struct AppContext {
   struct SDL_Window *window;
   struct SDL_Renderer *renderer;
   struct SDL_Texture *screen_texture;
-  struct Grid grid;
   struct Mouse mouse;
   struct Vec2 screen_size;
+  struct Particle *grid;
   uint32_t *color_buffer;
   size_t total_particles;
   float last_frame;

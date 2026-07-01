@@ -1,11 +1,13 @@
-#include "SDL3/SDL_events.h"
 #define SDL_MAIN_USE_CALLBACKS 1
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 #include <SDL3_ttf/SDL_ttf.h>
+#include <stdlib.h>
+#include <time.h>
 
 #include "defines.h"
+#include "events.h"
 #include "graphics/renderer.h"
 #include "simulation/grid.h"
 #include "types.h"
@@ -25,13 +27,14 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
   struct AppContext *ctx = (struct AppContext *)SDL_malloc(sizeof(struct AppContext));
   initialize_context(ctx);
   SDL_HideCursor();
+  srand(time(NULL));
   *appstate = ctx;
   return SDL_APP_CONTINUE;
 }
 
 SDL_AppResult SDL_AppIterate(void *appstate) {
   struct AppContext *ctx = (struct AppContext *)appstate;
-
+  handle_events(ctx);
   float deltatime = get_deltatime(ctx->last_frame);
   float need = 1.0f / FPS;
   if (deltatime >= need) {
@@ -39,20 +42,9 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
     SDL_SetRenderDrawColorFloat(ctx->renderer, 0.0f, 0.0f, 0.0f, 1.0f);
     SDL_RenderClear(ctx->renderer);
     iterate_grid(ctx);
-    iterate_mouse(ctx);
+    move_mouse(ctx);
     render(ctx);
     SDL_RenderPresent(ctx->renderer);
-  }
-
-  return SDL_APP_CONTINUE;
-}
-
-SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
-  struct AppContext *ctx = (struct AppContext *)appstate;
-  if (event->type == SDL_EVENT_QUIT) {
-    return SDL_APP_SUCCESS;
-  } else if (event->type == SDL_EVENT_MOUSE_WHEEL) {
-    ctx->mouse.size = CLAMP(ctx->mouse.size + event->wheel.y, 0, MAX_MOUSE_SIZE);
   }
   return SDL_APP_CONTINUE;
 }
@@ -60,8 +52,7 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
   struct AppContext *ctx = (struct AppContext *)appstate;
   SDL_DestroyTexture(ctx->screen_texture);
-  SDL_free(ctx->grid.parcticles);
-  SDL_free(ctx->grid.buf);
+  SDL_free(ctx->grid);
   SDL_free(ctx->color_buffer);
   SDL_free(ctx);
 }
