@@ -2,12 +2,19 @@
 #define TYPES_INCLUDED
 
 #include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
 #include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
 enum ParticleType {
+  PARTICLE_NOTHING,
   PARTICLE_SAND,
+};
+
+struct Color {
+  enum ParticleType type;
+  uint8_t r, g, b, a;
 };
 
 struct fVec2 {
@@ -29,6 +36,7 @@ struct Particle {
   enum ParticleType type;
   struct fVec2 pos;
   struct fVec2 vel;
+  uint32_t color;
   bool is_updated;
 };
 
@@ -56,14 +64,24 @@ struct Buffers {
   uint32_t *color_buffer;
 };
 
+struct Resources {
+  struct SDL_Texture *screen_texture;
+  struct TTF_Font *font;
+};
+
+struct Timers {
+  float lastframe;
+  float deltatime;
+};
+
 struct AppContext {
   struct SDL_Window *window;
   struct SDL_Renderer *renderer;
-  struct SDL_Texture *screen_texture;
+  struct Resources resources;
   struct Buffers buffers;
   struct Mouse mouse;
+  struct Timers timers;
   struct Vec2 screen_size;
-  float last_frame;
 };
 
 struct DrawParams {

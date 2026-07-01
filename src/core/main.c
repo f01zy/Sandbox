@@ -24,9 +24,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
     SDL_Log("Failed to initialize SDL_ttf: %s\n", SDL_GetError());
     return SDL_APP_FAILURE;
   }
-  struct AppContext *ctx = (struct AppContext *)SDL_malloc(sizeof(struct AppContext));
+  struct AppContext *ctx = (struct AppContext *)SDL_calloc(1, sizeof(struct AppContext));
   initialize_context(ctx);
-  SDL_HideCursor();
   srand(time(NULL));
   *appstate = ctx;
   return SDL_APP_CONTINUE;
@@ -35,15 +34,22 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char **argv) {
 SDL_AppResult SDL_AppIterate(void *appstate) {
   struct AppContext *ctx = (struct AppContext *)appstate;
   handle_events(ctx);
-  float deltatime = get_deltatime(ctx->last_frame);
+  float deltatime = get_deltatime(ctx->timers.lastframe);
   float need = 1.0f / FPS;
   if (deltatime >= need) {
-    ctx->last_frame = SDL_GetTicks();
-    SDL_SetRenderDrawColorFloat(ctx->renderer, 0.0f, 0.0f, 0.0f, 1.0f);
-    SDL_RenderClear(ctx->renderer);
+    ctx->timers.lastframe = SDL_GetTicks();
+    ctx->timers.deltatime = deltatime;
+
+    // Clear screen
+    SDL_SetRenderDrawColor(ctx->renderer, 0, 0, 0, 255);
+    SDL_FRect level_rect = {0, 0, ctx->screen_size.x, ctx->screen_size.y};
+    SDL_RenderFillRect(ctx->renderer, &level_rect);
+
+    // Render sandbox
     iterate_grid(ctx);
     move_mouse(ctx);
     render(ctx);
+
     SDL_RenderPresent(ctx->renderer);
   }
   return SDL_APP_CONTINUE;
@@ -51,7 +57,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
   struct AppContext *ctx = (struct AppContext *)appstate;
-  SDL_DestroyTexture(ctx->screen_texture);
+  TTF_CloseFont(ctx->resources.font);
+  SDL_DestroyTexture(ctx->resources.screen_texture);
   SDL_free(ctx->buffers.grid);
   SDL_free(ctx->buffers.color_buffer);
   SDL_free(ctx->buffers.particles.buf);

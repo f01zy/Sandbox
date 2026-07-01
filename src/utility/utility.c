@@ -6,13 +6,24 @@
 
 #include "colors.h"
 #include "defines.h"
+#include "types.h"
 #include "utility/utility.h"
 
-uint32_t get_color_from_type(enum ParticleType type) {
+uint32_t get_distort_color(struct Color color) {
+  int r_noise = rand() % 51 - 25;
+  int g_noise = rand() % 51 - 25;
+  int b_noise = rand() % 41 - 20;
+  uint8_t r = CLAMP(color.r + r_noise, 0, 255);
+  uint8_t g = CLAMP(color.g + g_noise, 0, 255);
+  uint8_t b = CLAMP(color.b + b_noise, 0, 255);
+  return MAKE_COLOR(r, g, b, 255);
+}
+
+struct Color get_color_by_type(enum ParticleType type) {
   for (int i = 0; i < sizeof(colors) / sizeof(colors[0]); i++) {
-    if (colors[i].type == type) return colors[i].color;
+    if (colors[i].type == type) return colors[i];
   }
-  return MAKE_COLOR(0, 0, 0, 255);
+  return (struct Color){PARTICLE_NOTHING, 0, 0, 0, 255};
 }
 
 size_t get_index_from_vector(struct Vec2 size, struct Vec2 pos) { return pos.y * size.x + pos.x; }
@@ -28,11 +39,19 @@ void initialize_context(struct AppContext *ctx) {
     SDL_Log("Failed to create window and renderer: %s\n", SDL_GetError());
     exit(-1);
   }
-  ctx->screen_texture = SDL_CreateTexture(ctx->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, ctx->screen_size.x, ctx->screen_size.y);
-  if (!ctx->screen_texture) {
+  SDL_HideCursor();
+  ctx->resources.screen_texture = SDL_CreateTexture(ctx->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_STREAMING, ctx->screen_size.x, ctx->screen_size.y);
+  if (!ctx->resources.screen_texture) {
     SDL_Log("Failed to create screen texture: %s\n", SDL_GetError());
     exit(-1);
   }
+  ctx->resources.font = TTF_OpenFont("../../resources/fonts/Tamzen8x16b.ttf", 14);
+  if (!ctx->resources.font) {
+    SDL_Log("Failed to open font: %s\n", SDL_GetError());
+    exit(-1);
+  }
+  ctx->mouse.pos = (struct fVec2){ctx->screen_size.x / 2.0f, ctx->screen_size.y / 2.0f};
+  ctx->mouse.size = 5;
   ctx->buffers.grid = (struct GridItem *)SDL_calloc(total_particles, sizeof(struct GridItem));
   ctx->buffers.color_buffer = (uint32_t *)SDL_calloc(total_particles, sizeof(uint32_t));
   ctx->buffers.particles = (struct Particles){
@@ -40,8 +59,6 @@ void initialize_context(struct AppContext *ctx) {
     .size = PARTICLES_LIMIT,
     .len = 0,
   };
-  ctx->mouse.pos = (struct fVec2){ctx->screen_size.x / 2.0f, ctx->screen_size.y / 2.0f};
-  ctx->mouse.size = 5;
   for (int i = 0; i < total_particles; i++) {
     ctx->buffers.grid[i].particle = -1;
   }

@@ -11,6 +11,8 @@ set(SOURCE
   ./src/simulation/grid.c
   ./src/simulation/particles.c
   ./src/ui/mouse.c
+  ./src/ui/hud.c
+  ./src/ui/text.c
   ./src/graphics/renderer.c
   ./src/utility/utility.c
 )

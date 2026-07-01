@@ -4,6 +4,6 @@
 #include "types.h"
 
 void iterate_grid(struct AppContext *ctx);
-void draw_grid(const struct GridItem *grid, const struct Particles *particles, uint32_t *color_buffer, struct Vec2 screen_size);
+void draw_grid(const struct Buffers *buffers, struct Vec2 screen_size);
 
 #endif

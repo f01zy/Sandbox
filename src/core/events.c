@@ -1,7 +1,7 @@
 #include <SDL3/SDL.h>
 
+#include "core/events.h"
 #include "defines.h"
-#include "events.h"
 #include "simulation/particles.h"
 #include "types.h"
 
@@ -36,5 +36,5 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 }
 
 void handle_events(struct AppContext *ctx) {
-  if (ctx->mouse.is_left_button_pressed) spawn_particles(&ctx->mouse, ctx->buffers.grid, &ctx->buffers.particles, ctx->screen_size);
+  if (ctx->mouse.is_left_button_pressed) spawn_particles(&ctx->buffers, &ctx->mouse, ctx->screen_size);
 }
