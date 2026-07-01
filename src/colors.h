@@ -9,7 +9,6 @@ static struct {
   enum ParticleType type;
   uint32_t color;
 } colors[] = {
-  {PARTICLE_EMPTY, MAKE_COLOR(0, 0, 0, 255)},
   {PARTICLE_SAND, MAKE_COLOR(244, 164, 96, 255)},
 };
 

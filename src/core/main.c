@@ -52,7 +52,8 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
   struct AppContext *ctx = (struct AppContext *)appstate;
   SDL_DestroyTexture(ctx->screen_texture);
-  SDL_free(ctx->grid);
-  SDL_free(ctx->color_buffer);
+  SDL_free(ctx->buffers.grid);
+  SDL_free(ctx->buffers.color_buffer);
+  SDL_free(ctx->buffers.particles.buf);
   SDL_free(ctx);
 }

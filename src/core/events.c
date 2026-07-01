@@ -36,5 +36,5 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 }
 
 void handle_events(struct AppContext *ctx) {
-  if (ctx->mouse.is_left_button_pressed) spawn_particles(ctx->grid, &ctx->mouse, ctx->screen_size);
+  if (ctx->mouse.is_left_button_pressed) spawn_particles(&ctx->mouse, ctx->buffers.grid, &ctx->buffers.particles, ctx->screen_size);
 }

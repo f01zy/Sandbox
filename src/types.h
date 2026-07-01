@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 enum ParticleType {
-  PARTICLE_EMPTY,
   PARTICLE_SAND,
 };
 
@@ -33,6 +32,16 @@ struct Particle {
   bool is_updated;
 };
 
+struct Particles {
+  struct Particle *buf;
+  size_t size;
+  size_t len;
+};
+
+struct GridItem {
+  size_t particle;
+};
+
 struct Mouse {
   struct fVec2 pos;
   struct fVec2 vel;
@@ -41,22 +50,25 @@ struct Mouse {
   int size;
 };
 
+struct Buffers {
+  struct Particles particles;
+  struct GridItem *grid;
+  uint32_t *color_buffer;
+};
+
 struct AppContext {
   struct SDL_Window *window;
   struct SDL_Renderer *renderer;
   struct SDL_Texture *screen_texture;
+  struct Buffers buffers;
   struct Mouse mouse;
   struct Vec2 screen_size;
-  struct Particle *grid;
-  uint32_t *color_buffer;
-  size_t total_particles;
   float last_frame;
 };
 
 struct DrawParams {
-  uint32_t *buf;
+  uint32_t *color_buffer;
   struct Vec2 screen_size;
-  size_t total_particles;
 };
 
 #endif

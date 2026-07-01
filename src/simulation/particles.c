@@ -1,7 +1,34 @@
 #include "particles.h"
+#include "types.h"
 #include "utility/utility.h"
 
-void spawn_particles(struct Particle *grid, const struct Mouse *mouse, struct Vec2 screen_size) {
+struct Particle *create_particle(struct Particles *particles) {
+  if (particles->len >= particles->size - 1) return NULL;
+  struct Particle *particle = &particles->buf[particles->len++];
+  particle->vel = (struct fVec2){0.0f, 0.0f};
+  particle->pos = (struct fVec2){0.0f, 0.0f};
+  return particle;
+}
+
+void delete_particle() {}
+
+struct Particle *get_particle_by_position(const struct GridItem *grid, const struct Particles *particles, struct Vec2 pos, struct Vec2 screen_size) {
+  if (!check_position(screen_size, pos)) return NULL;
+  const struct GridItem *item = &grid[get_index_from_vector(screen_size, pos)];
+  if (item->particle == -1) return NULL;
+  return &particles->buf[item->particle];
+}
+
+void move_particle(struct GridItem *grid, struct Particles *particles, struct Vec2 screen_size, struct Vec2 from, struct Vec2 to) {
+  if (!check_position(screen_size, from) || !check_position(screen_size, to)) return;
+  size_t a = get_index_from_vector(screen_size, from);
+  size_t b = get_index_from_vector(screen_size, to);
+  particles->buf[grid[a].particle].pos = (struct fVec2){to.x, to.y};
+  grid[b].particle = grid[a].particle;
+  grid[a].particle = -1;
+}
+
+void spawn_particles(const struct Mouse *mouse, struct GridItem *grid, struct Particles *particles, struct Vec2 screen_size) {
   float r = mouse->size;
   struct Vec4 bounds = {
     mouse->pos.x - r,
@@ -9,13 +36,24 @@ void spawn_particles(struct Particle *grid, const struct Mouse *mouse, struct Ve
     mouse->pos.y - r,
     mouse->pos.y + r,
   };
-  for (int y = bounds.ay; y < bounds.by; y++) {
-    for (int x = bounds.ax; x < bounds.bx; x++) {
+  for (int y = bounds.ay; y <= bounds.by; y++) {
+    for (int x = bounds.ax; x <= bounds.bx; x++) {
       struct Vec2 pos = {x, y};
       if (!check_position(screen_size, pos)) continue;
       int dx = x - mouse->pos.x;
       int dy = y - mouse->pos.y;
-      if ((dx * dx + dy * dy) <= r * r) grid[get_index_from_vector(screen_size, pos)].type = PARTICLE_SAND;
+      if ((dx * dx + dy * dy) <= r * r) {
+        struct Particle *particle = get_particle_by_position(grid, particles, pos, screen_size);
+        if (particle) continue;
+        particle = create_particle(particles);
+        if (!particle) {
+          SDL_Log("The particle limit has been reached\n");
+          return;
+        }
+        particle->pos = (struct fVec2){pos.x, pos.y};
+        particle->type = PARTICLE_SAND;
+        grid[get_index_from_vector(screen_size, pos)].particle = particles->len - 1;
+      }
     }
   }
 }

@@ -6,7 +6,7 @@
 #include "ui/mouse.h"
 #include "utility/utility.h"
 
-void draw_mouse(const struct Mouse *mouse, const struct DrawParams *params) {
+void draw_mouse(const struct Mouse *mouse, uint32_t *color_buffer, struct Vec2 screen_size) {
   int angle = 0;
   while (angle <= 360) {
     struct fVec2 offset = {
@@ -17,9 +17,9 @@ void draw_mouse(const struct Mouse *mouse, const struct DrawParams *params) {
       (int)(mouse->pos.x + offset.x),
       (int)(mouse->pos.y + offset.y),
     };
-    if (check_position(params->screen_size, pos)) {
-      size_t index = get_index_from_vector(params->screen_size, pos);
-      params->buf[index] = MAKE_COLOR(255, 255, 255, 255);
+    if (check_position(screen_size, pos)) {
+      size_t index = get_index_from_vector(screen_size, pos);
+      color_buffer[index] = MAKE_COLOR(255, 255, 255, 255);
     }
     angle++;
   }
