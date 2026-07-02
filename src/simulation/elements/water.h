@@ -10,6 +10,7 @@ struct Particle water = {
   .state = PARTICLE_STATE_LIQUID,
   .type = PARTICLE_TYPE_WATER,
   .color = MAKE_COLOR(35, 137, 218, 255),
+  .el = 0.0f,
   .weight = 30,
   .is_color_distort = false,
 };

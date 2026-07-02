@@ -12,6 +12,7 @@ set(SOURCE
   ./src/simulation/particle.c
   ./src/simulation/powder.c
   ./src/simulation/liquid.c
+  ./src/simulation/physics.c
   ./src/ui/mouse.c
   ./src/ui/hud.c
   ./src/ui/text.c

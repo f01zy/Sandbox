@@ -10,6 +10,7 @@ struct Particle sand = {
   .state = PARTICLE_STATE_POWDER,
   .type = PARTICLE_TYPE_SAND,
   .color = MAKE_COLOR(244, 164, 96, 255),
+  .el = 0.05f,
   .weight = 90,
   .is_color_distort = true,
 };

@@ -8,6 +8,10 @@
 #include "types.h"
 #include "utility/utility.h"
 
+struct Vec2 fvec2_to_vec2(struct fVec2 vec) { return (struct Vec2){(int)vec.x, (int)vec.y}; }
+
+struct fVec2 vec2_to_fvec2(struct Vec2 vec) { return (struct fVec2){(float)vec.x, (float)vec.y}; }
+
 uint32_t get_distort_color(uint32_t color) {
   int r_noise = rand() % 51 - 25;
   int g_noise = rand() % 51 - 25;
@@ -18,7 +22,7 @@ uint32_t get_distort_color(uint32_t color) {
   return MAKE_COLOR(r, g, b, 255);
 }
 
-size_t get_index_from_vector(struct Vec2 size, struct Vec2 pos) { return pos.y * size.x + pos.x; }
+size_t get_index_from_vector(struct Vec2 screen_size, struct Vec2 pos) { return pos.y * screen_size.x + pos.x; }
 
 float get_deltatime(float last) { return (SDL_GetTicks() - last) / 1000.0f; }
 
@@ -63,6 +67,8 @@ void clear_color_buffer(uint32_t *color_buffer, struct Vec2 screen_size) {
     color_buffer[i] = MAKE_COLOR(0, 0, 0, 255);
   }
 }
+
+bool compare_vec2(struct Vec2 a, struct Vec2 b) { return a.x == b.x && a.y == b.y; }
 
 bool check_position(struct Vec2 screen_size, struct Vec2 pos) {
   if (pos.x >= 0 && pos.x < screen_size.x && pos.y >= 0 && pos.y < screen_size.y) return true;
