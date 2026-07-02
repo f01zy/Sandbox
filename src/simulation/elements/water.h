@@ -11,7 +11,7 @@ struct Particle water = {
   .type = PARTICLE_TYPE_WATER,
   .color = MAKE_COLOR(35, 137, 218, 255),
   .el = 0.0f,
-  .weight = 30,
+  .weight = 0.03f,
   .is_color_distort = false,
 };
 

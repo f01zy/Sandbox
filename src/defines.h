@@ -8,7 +8,7 @@
 #define FPS                     60
 
 // Sandbox constants
-#define ACCELERATION_OF_GRAVITY 9.80665f
+#define ACCELERATION_OF_GRAVITY 400.0f
 #define PARTICLES_LIMIT         2000000
 #define MOUSE_COEFFICIENT       0.2f
 #define MAX_MOUSE_SIZE          50

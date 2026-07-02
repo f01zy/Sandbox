@@ -33,7 +33,7 @@ bool grid_raycast(struct Buffers *buffers, struct Vec2 screen_size, struct Vec2 
   int err = dx - dy;
   int x = ax;
   int y = ay;
-  while (x != bx && y != by) {
+  while (1) {
     int prev_x = x;
     int prev_y = y;
     int tmp = err * 2;
@@ -62,6 +62,7 @@ bool grid_raycast(struct Buffers *buffers, struct Vec2 screen_size, struct Vec2 
       *collision_pos = curr;
       return true;
     }
+    if (x == bx && y == by) break;
   }
   return false;
 }
@@ -73,7 +74,6 @@ struct Particle *get_particle_by_position(const struct Buffers *buffers, struct 
   return &buffers->particles.buf[item->particle];
 }
 
-// TODO: говно
 void move_particle(const struct Buffers *buffers, struct Vec2 screen_size, struct Vec2 from, struct fVec2 to) {
   struct Vec2 projected_to = fvec2_to_vec2(to);
   if (!check_position(screen_size, from) || !check_position(screen_size, projected_to)) return;

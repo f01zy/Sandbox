@@ -47,7 +47,7 @@ struct Particle {
   struct fVec2 vel;
   uint32_t color;
   float el;
-  int weight;
+  float weight;
   bool is_color_distort;
   bool is_updated;
 };
