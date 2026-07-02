@@ -2,7 +2,7 @@
 
 #include "core/events.h"
 #include "defines.h"
-#include "simulation/particles.h"
+#include "simulation/particle.h"
 #include "types.h"
 
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
@@ -16,18 +16,12 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     break;
 
   case SDL_EVENT_MOUSE_BUTTON_DOWN:
-    if (event->button.button == SDL_BUTTON_LEFT) {
-      ctx->mouse.is_left_button_pressed = true;
-    } else if (event->button.button == SDL_BUTTON_RIGHT) {
-      ctx->mouse.is_right_button_pressed = true;
-    }
-    break;
-
   case SDL_EVENT_MOUSE_BUTTON_UP:
+    bool state = event->type == SDL_EVENT_MOUSE_BUTTON_DOWN;
     if (event->button.button == SDL_BUTTON_LEFT) {
-      ctx->mouse.is_left_button_pressed = false;
+      ctx->mouse.is_left_button_pressed = state;
     } else if (event->button.button == SDL_BUTTON_RIGHT) {
-      ctx->mouse.is_right_button_pressed = false;
+      ctx->mouse.is_right_button_pressed = state;
     }
     break;
   }
@@ -36,5 +30,5 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 }
 
 void handle_events(struct AppContext *ctx) {
-  if (ctx->mouse.is_left_button_pressed) spawn_particles(&ctx->buffers, &ctx->mouse, ctx->screen_size);
+  if (ctx->mouse.is_left_button_pressed) spawn_particles(&ctx->buffers, &ctx->mouse, ctx->screen_size, ctx->curr_particle);
 }

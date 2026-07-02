@@ -6,8 +6,7 @@
 
 #include "types.h"
 
-uint32_t get_distort_color(struct Color color);
-struct Color get_color_by_type(enum ParticleType type);
+uint32_t get_distort_color(uint32_t color);
 size_t get_index_from_vector(struct Vec2 size, struct Vec2 pos);
 float get_deltatime(float last);
 int get_total_particles(struct Vec2 screen_size);

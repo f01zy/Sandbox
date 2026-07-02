@@ -9,7 +9,9 @@ set(SOURCE
   ./src/core/main.c
   ./src/core/events.c
   ./src/simulation/grid.c
-  ./src/simulation/particles.c
+  ./src/simulation/particle.c
+  ./src/simulation/powder.c
+  ./src/simulation/liquid.c
   ./src/ui/mouse.c
   ./src/ui/hud.c
   ./src/ui/text.c

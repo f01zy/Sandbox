@@ -4,26 +4,18 @@
 #include <stdint.h>
 #include <stdlib.h>
 
-#include "colors.h"
 #include "defines.h"
 #include "types.h"
 #include "utility/utility.h"
 
-uint32_t get_distort_color(struct Color color) {
+uint32_t get_distort_color(uint32_t color) {
   int r_noise = rand() % 51 - 25;
   int g_noise = rand() % 51 - 25;
   int b_noise = rand() % 41 - 20;
-  uint8_t r = CLAMP(color.r + r_noise, 0, 255);
-  uint8_t g = CLAMP(color.g + g_noise, 0, 255);
-  uint8_t b = CLAMP(color.b + b_noise, 0, 255);
+  uint8_t r = CLAMP(((color & 0xFF000000) >> 24) + r_noise, 0, 255);
+  uint8_t g = CLAMP(((color & 0x00FF0000) >> 16) + g_noise, 0, 255);
+  uint8_t b = CLAMP(((color & 0x0000FF00) >> 8) + b_noise, 0, 255);
   return MAKE_COLOR(r, g, b, 255);
-}
-
-struct Color get_color_by_type(enum ParticleType type) {
-  for (int i = 0; i < sizeof(colors) / sizeof(colors[0]); i++) {
-    if (colors[i].type == type) return colors[i];
-  }
-  return (struct Color){PARTICLE_NOTHING, 0, 0, 0, 255};
 }
 
 size_t get_index_from_vector(struct Vec2 size, struct Vec2 pos) { return pos.y * size.x + pos.x; }
@@ -50,6 +42,7 @@ void initialize_context(struct AppContext *ctx) {
     SDL_Log("Failed to open font: %s\n", SDL_GetError());
     exit(-1);
   }
+  ctx->curr_particle = PARTICLE_TYPE_SAND;
   ctx->mouse.pos = (struct fVec2){ctx->screen_size.x / 2.0f, ctx->screen_size.y / 2.0f};
   ctx->mouse.size = 5;
   ctx->buffers.grid = (struct GridItem *)SDL_calloc(total_particles, sizeof(struct GridItem));

@@ -35,7 +35,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   struct AppContext *ctx = (struct AppContext *)appstate;
   handle_events(ctx);
   float deltatime = get_deltatime(ctx->timers.lastframe);
-  float need = 1.0f / FPS;
+  double need = 1.0f / FPS;
   if (deltatime >= need) {
     ctx->timers.lastframe = SDL_GetTicks();
     ctx->timers.deltatime = deltatime;

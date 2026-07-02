@@ -1,12 +1,22 @@
-#include "particles.h"
+#include "particle.h"
 #include "types.h"
 #include "utility/utility.h"
+
+#include "simulation/elements/sand.h"
+#include "simulation/elements/water.h"
+
+struct Particle get_common_particle(enum ParticleType type) {
+  switch (type) {
+  case PARTICLE_TYPE_SAND:
+    return sand;
+  case PARTICLE_TYPE_WATER:
+    return water;
+  }
+}
 
 struct Particle *create_particle(struct Particles *particles) {
   if (particles->len >= particles->size - 1) return NULL;
   struct Particle *particle = &particles->buf[particles->len++];
-  particle->vel = (struct fVec2){0.0f, 0.0f};
-  particle->pos = (struct fVec2){0.0f, 0.0f};
   return particle;
 }
 
@@ -21,14 +31,16 @@ struct Particle *get_particle_by_position(const struct Buffers *buffers, struct 
 
 void move_particle(const struct Buffers *buffers, struct Vec2 screen_size, struct Vec2 from, struct Vec2 to) {
   if (!check_position(screen_size, from) || !check_position(screen_size, to)) return;
-  size_t a = get_index_from_vector(screen_size, from);
-  size_t b = get_index_from_vector(screen_size, to);
-  buffers->particles.buf[buffers->grid[a].particle].pos = (struct fVec2){to.x, to.y};
-  buffers->grid[b].particle = buffers->grid[a].particle;
-  buffers->grid[a].particle = -1;
+  size_t index_from = get_index_from_vector(screen_size, from);
+  size_t index_to = get_index_from_vector(screen_size, to);
+  size_t particle_index = buffers->grid[index_from].particle;
+  if (particle_index == -1) return;
+  buffers->particles.buf[particle_index].pos = (struct fVec2){to.x, to.y};
+  buffers->grid[index_to].particle = buffers->grid[index_from].particle;
+  buffers->grid[index_from].particle = -1;
 }
 
-void spawn_particles(struct Buffers *buffers, const struct Mouse *mouse, struct Vec2 screen_size) {
+void spawn_particles(struct Buffers *buffers, const struct Mouse *mouse, struct Vec2 screen_size, enum ParticleType type) {
   float r = mouse->size;
   struct Vec4 bounds = {
     mouse->pos.x - r,
@@ -50,9 +62,9 @@ void spawn_particles(struct Buffers *buffers, const struct Mouse *mouse, struct 
           SDL_Log("The particle limit has been reached\n");
           return;
         }
+        *particle = get_common_particle(type);
         particle->pos = (struct fVec2){pos.x, pos.y};
-        particle->type = PARTICLE_SAND;
-        particle->color = get_distort_color(get_color_by_type(particle->type));
+        if (particle->is_color_distort) particle->color = get_distort_color(particle->color);
         buffers->grid[get_index_from_vector(screen_size, pos)].particle = buffers->particles.len - 1;
       }
     }

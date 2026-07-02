@@ -7,14 +7,16 @@
 #include <stddef.h>
 #include <stdint.h>
 
-enum ParticleType {
-  PARTICLE_NOTHING,
-  PARTICLE_SAND,
+enum ParticleState {
+  PARTICLE_STATE_SOLID,
+  PARTICLE_STATE_POWDER,
+  PARTICLE_STATE_LIQUID,
+  PARTICLE_STATE_GAS,
 };
 
-struct Color {
-  enum ParticleType type;
-  uint8_t r, g, b, a;
+enum ParticleType {
+  PARTICLE_TYPE_SAND,
+  PARTICLE_TYPE_WATER,
 };
 
 struct fVec2 {
@@ -32,11 +34,20 @@ struct Vec4 {
   int ay, by;
 };
 
+struct GridItem {
+  size_t particle;
+};
+
 struct Particle {
+  const char *name;
+  const char *desc;
+  enum ParticleState state;
   enum ParticleType type;
   struct fVec2 pos;
   struct fVec2 vel;
   uint32_t color;
+  int weight;
+  bool is_color_distort;
   bool is_updated;
 };
 
@@ -46,16 +57,12 @@ struct Particles {
   size_t len;
 };
 
-struct GridItem {
-  size_t particle;
-};
-
 struct Mouse {
   struct fVec2 pos;
   struct fVec2 vel;
+  int size;
   bool is_left_button_pressed;
   bool is_right_button_pressed;
-  int size;
 };
 
 struct Buffers {
@@ -82,11 +89,7 @@ struct AppContext {
   struct Mouse mouse;
   struct Timers timers;
   struct Vec2 screen_size;
-};
-
-struct DrawParams {
-  uint32_t *color_buffer;
-  struct Vec2 screen_size;
+  enum ParticleType curr_particle;
 };
 
 #endif

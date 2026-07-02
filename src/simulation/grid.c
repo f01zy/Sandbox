@@ -2,7 +2,9 @@
 #include <stdlib.h>
 
 #include "simulation/grid.h"
-#include "simulation/particles.h"
+#include "simulation/liquid.h"
+#include "simulation/particle.h"
+#include "simulation/powder.h"
 #include "types.h"
 #include "utility/utility.h"
 
@@ -21,19 +23,12 @@ void iterate_grid(struct AppContext *ctx) {
         continue;
       }
       struct Particle *particle = &ctx->buffers.particles.buf[idx];
-      struct Vec2 down_pos = {x, y + 1};
-      struct Vec2 down_left_pos = {x - 1, y + 1};
-      struct Vec2 down_right_pos = {x + 1, y + 1};
-      switch (particle->type) {
-      case PARTICLE_SAND:
-        if (y >= ctx->screen_size.y - 1) break;
-        if (!get_particle_by_position(&ctx->buffers, down_pos, ctx->screen_size)) {
-          move_particle(&ctx->buffers, ctx->screen_size, current_pos, down_pos);
-        } else if (x < ctx->screen_size.x - 1 && !get_particle_by_position(&ctx->buffers, down_right_pos, ctx->screen_size)) {
-          move_particle(&ctx->buffers, ctx->screen_size, current_pos, down_right_pos);
-        } else if (x > 0 && !get_particle_by_position(&ctx->buffers, down_left_pos, ctx->screen_size)) {
-          move_particle(&ctx->buffers, ctx->screen_size, current_pos, down_left_pos);
-        }
+      switch (particle->state) {
+      case PARTICLE_STATE_POWDER:
+        update_powder(ctx, particle);
+        break;
+      case PARTICLE_STATE_LIQUID:
+        update_liquid(ctx, particle);
         break;
       default:
         break;

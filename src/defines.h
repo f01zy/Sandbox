@@ -7,7 +7,7 @@
 #define FPS                    60
 #define PARTICLES_LIMIT        2000000
 
-#define MOUSE_COEFFICIENT      0.3f
+#define MOUSE_COEFFICIENT      0.2f
 #define MAX_MOUSE_SIZE         50
 
 #define MAKE_COLOR(R, G, B, A) (((uint32_t)(R) << 24) | ((uint32_t)(G) << 16) | ((uint32_t)(B) << 8) | ((uint32_t)(A)))
